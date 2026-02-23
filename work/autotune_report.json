@@ -1,0 +1,702 @@
+{
+  "base_config": "work\\floorplan_config.json",
+  "tested": 36,
+  "successful": 35,
+  "best": {
+    "trial": "g0_12_d0_2_m0_4",
+    "params": {
+      "line_max_gap_m": 0.12,
+      "line_min_density": 0.2,
+      "wall_min_length_m": 0.4
+    },
+    "status": "ok",
+    "score": 43.27506692160612,
+    "wall_segments_count": 2615,
+    "normalized_points_count": 219294,
+    "mean_line_length_m": 0.70151051625239,
+    "long_lines_count_0_5m": 1534,
+    "outputs": {
+      "raw_plan_dxf": "work\\autotune\\g0_12_d0_2_m0_4\\floorplan_raw.dxf",
+      "normalized_plan_dxf": "work\\autotune\\g0_12_d0_2_m0_4\\floorplan_normalized.dxf",
+      "wall_lines_dxf": "work\\autotune\\g0_12_d0_2_m0_4\\floorplan_walls.dxf"
+    }
+  },
+  "trials": [
+    {
+      "trial": "g0_12_d0_2_m0_4",
+      "params": {
+        "line_max_gap_m": 0.12,
+        "line_min_density": 0.2,
+        "wall_min_length_m": 0.4
+      },
+      "status": "ok",
+      "score": 43.27506692160612,
+      "wall_segments_count": 2615,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.70151051625239,
+      "long_lines_count_0_5m": 1534,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_12_d0_2_m0_4\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_12_d0_2_m0_4\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_12_d0_2_m0_4\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_12_d0_3_m0_4",
+      "params": {
+        "line_max_gap_m": 0.12,
+        "line_min_density": 0.3,
+        "wall_min_length_m": 0.4
+      },
+      "status": "ok",
+      "score": 43.12628239845261,
+      "wall_segments_count": 2585,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.703825918762089,
+      "long_lines_count_0_5m": 1521,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_12_d0_3_m0_4\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_12_d0_3_m0_4\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_12_d0_3_m0_4\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_12_d0_4_m0_4",
+      "params": {
+        "line_max_gap_m": 0.12,
+        "line_min_density": 0.4,
+        "wall_min_length_m": 0.4
+      },
+      "status": "ok",
+      "score": 42.468670148654084,
+      "wall_segments_count": 2489,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.7096906388107674,
+      "long_lines_count_0_5m": 1470,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_12_d0_4_m0_4\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_12_d0_4_m0_4\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_12_d0_4_m0_4\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_12_d0_2_m0_3",
+      "params": {
+        "line_max_gap_m": 0.12,
+        "line_min_density": 0.2,
+        "wall_min_length_m": 0.3
+      },
+      "status": "ok",
+      "score": 39.22341532639546,
+      "wall_segments_count": 4228,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.5594512771996216,
+      "long_lines_count_0_5m": 1534,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_12_d0_2_m0_3\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_12_d0_2_m0_3\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_12_d0_2_m0_3\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_12_d0_3_m0_3",
+      "params": {
+        "line_max_gap_m": 0.12,
+        "line_min_density": 0.3,
+        "wall_min_length_m": 0.3
+      },
+      "status": "ok",
+      "score": 39.11340276095907,
+      "wall_segments_count": 4129,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.5637224509566481,
+      "long_lines_count_0_5m": 1521,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_12_d0_3_m0_3\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_12_d0_3_m0_3\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_12_d0_3_m0_3\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_12_d0_4_m0_3",
+      "params": {
+        "line_max_gap_m": 0.12,
+        "line_min_density": 0.4,
+        "wall_min_length_m": 0.3
+      },
+      "status": "ok",
+      "score": 38.43802557544757,
+      "wall_segments_count": 3910,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.5715805626598466,
+      "long_lines_count_0_5m": 1470,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_12_d0_4_m0_3\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_12_d0_4_m0_3\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_12_d0_4_m0_3\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_08_d0_2_m0_4",
+      "params": {
+        "line_max_gap_m": 0.08,
+        "line_min_density": 0.2,
+        "wall_min_length_m": 0.4
+      },
+      "status": "ok",
+      "score": 38.314310099573255,
+      "wall_segments_count": 2109,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.6993835941204363,
+      "long_lines_count_0_5m": 1186,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_08_d0_2_m0_4\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_08_d0_2_m0_4\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_08_d0_2_m0_4\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_08_d0_3_m0_4",
+      "params": {
+        "line_max_gap_m": 0.08,
+        "line_min_density": 0.3,
+        "wall_min_length_m": 0.4
+      },
+      "status": "ok",
+      "score": 38.2908547008547,
+      "wall_segments_count": 2106,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.6996723646723647,
+      "long_lines_count_0_5m": 1184,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_08_d0_3_m0_4\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_08_d0_3_m0_4\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_08_d0_3_m0_4\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_08_d0_4_m0_4",
+      "params": {
+        "line_max_gap_m": 0.08,
+        "line_min_density": 0.4,
+        "wall_min_length_m": 0.4
+      },
+      "status": "ok",
+      "score": 38.13800865800866,
+      "wall_segments_count": 2079,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.7016594516594516,
+      "long_lines_count_0_5m": 1169,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_08_d0_4_m0_4\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_08_d0_4_m0_4\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_08_d0_4_m0_4\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_12_d0_2_m0_2",
+      "params": {
+        "line_max_gap_m": 0.12,
+        "line_min_density": 0.2,
+        "wall_min_length_m": 0.2
+      },
+      "status": "ok",
+      "score": 36.03003805274898,
+      "wall_segments_count": 7621,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.4120902768665529,
+      "long_lines_count_0_5m": 1534,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_12_d0_2_m0_2\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_12_d0_2_m0_2\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_12_d0_2_m0_2\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_12_d0_3_m0_2",
+      "params": {
+        "line_max_gap_m": 0.12,
+        "line_min_density": 0.3,
+        "wall_min_length_m": 0.2
+      },
+      "status": "ok",
+      "score": 35.95013619479984,
+      "wall_segments_count": 7269,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.41888292750034395,
+      "long_lines_count_0_5m": 1521,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_12_d0_3_m0_2\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_12_d0_3_m0_2\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_12_d0_3_m0_2\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_05_d0_2_m0_4",
+      "params": {
+        "line_max_gap_m": 0.05,
+        "line_min_density": 0.2,
+        "wall_min_length_m": 0.4
+      },
+      "status": "ok",
+      "score": 35.64010291595198,
+      "wall_segments_count": 1749,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.6969754145225844,
+      "long_lines_count_0_5m": 946,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_05_d0_2_m0_4\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_05_d0_2_m0_4\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_05_d0_2_m0_4\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_05_d0_3_m0_4",
+      "params": {
+        "line_max_gap_m": 0.05,
+        "line_min_density": 0.3,
+        "wall_min_length_m": 0.4
+      },
+      "status": "ok",
+      "score": 35.64010291595198,
+      "wall_segments_count": 1749,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.6969754145225844,
+      "long_lines_count_0_5m": 946,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_05_d0_3_m0_4\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_05_d0_3_m0_4\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_05_d0_3_m0_4\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_05_d0_4_m0_4",
+      "params": {
+        "line_max_gap_m": 0.05,
+        "line_min_density": 0.4,
+        "wall_min_length_m": 0.4
+      },
+      "status": "ok",
+      "score": 35.60223367697595,
+      "wall_segments_count": 1746,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.6970733104238259,
+      "long_lines_count_0_5m": 943,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_05_d0_4_m0_4\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_05_d0_4_m0_4\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_05_d0_4_m0_4\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_03_d0_2_m0_4",
+      "params": {
+        "line_max_gap_m": 0.03,
+        "line_min_density": 0.2,
+        "wall_min_length_m": 0.4
+      },
+      "status": "ok",
+      "score": 35.419547703180214,
+      "wall_segments_count": 1415,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.7102897526501767,
+      "long_lines_count_0_5m": 783,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_03_d0_2_m0_4\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_03_d0_2_m0_4\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_03_d0_2_m0_4\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_03_d0_3_m0_4",
+      "params": {
+        "line_max_gap_m": 0.03,
+        "line_min_density": 0.3,
+        "wall_min_length_m": 0.4
+      },
+      "status": "ok",
+      "score": 35.419547703180214,
+      "wall_segments_count": 1415,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.7102897526501767,
+      "long_lines_count_0_5m": 783,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_03_d0_3_m0_4\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_03_d0_3_m0_4\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_03_d0_3_m0_4\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_03_d0_4_m0_4",
+      "params": {
+        "line_max_gap_m": 0.03,
+        "line_min_density": 0.4,
+        "wall_min_length_m": 0.4
+      },
+      "status": "ok",
+      "score": 35.419547703180214,
+      "wall_segments_count": 1415,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.7102897526501767,
+      "long_lines_count_0_5m": 783,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_03_d0_4_m0_4\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_03_d0_4_m0_4\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_03_d0_4_m0_4\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_12_d0_4_m0_2",
+      "params": {
+        "line_max_gap_m": 0.12,
+        "line_min_density": 0.4,
+        "wall_min_length_m": 0.2
+      },
+      "status": "ok",
+      "score": 35.22841980080274,
+      "wall_segments_count": 6727,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.4280853277835588,
+      "long_lines_count_0_5m": 1470,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_12_d0_4_m0_2\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_12_d0_4_m0_2\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_12_d0_4_m0_2\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_08_d0_2_m0_3",
+      "params": {
+        "line_max_gap_m": 0.08,
+        "line_min_density": 0.2,
+        "wall_min_length_m": 0.3
+      },
+      "status": "ok",
+      "score": 33.27346241457859,
+      "wall_segments_count": 3512,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.5515546697038725,
+      "long_lines_count_0_5m": 1186,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_08_d0_2_m0_3\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_08_d0_2_m0_3\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_08_d0_2_m0_3\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_08_d0_3_m0_3",
+      "params": {
+        "line_max_gap_m": 0.08,
+        "line_min_density": 0.3,
+        "wall_min_length_m": 0.3
+      },
+      "status": "ok",
+      "score": 33.26076021720492,
+      "wall_segments_count": 3499,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.5522377822234925,
+      "long_lines_count_0_5m": 1184,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_08_d0_3_m0_3\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_08_d0_3_m0_3\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_08_d0_3_m0_3\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_08_d0_4_m0_3",
+      "params": {
+        "line_max_gap_m": 0.08,
+        "line_min_density": 0.4,
+        "wall_min_length_m": 0.3
+      },
+      "status": "ok",
+      "score": 33.131421884142775,
+      "wall_segments_count": 3418,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.555927442949093,
+      "long_lines_count_0_5m": 1169,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_08_d0_4_m0_3\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_08_d0_4_m0_3\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_08_d0_4_m0_3\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_05_d0_3_m0_3",
+      "params": {
+        "line_max_gap_m": 0.05,
+        "line_min_density": 0.3,
+        "wall_min_length_m": 0.3
+      },
+      "status": "ok",
+      "score": 29.70737273659037,
+      "wall_segments_count": 2927,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.5492107960368978,
+      "long_lines_count_0_5m": 946,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_05_d0_3_m0_3\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_05_d0_3_m0_3\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_05_d0_3_m0_3\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_05_d0_2_m0_3",
+      "params": {
+        "line_max_gap_m": 0.05,
+        "line_min_density": 0.2,
+        "wall_min_length_m": 0.3
+      },
+      "status": "ok",
+      "score": 29.701338340730626,
+      "wall_segments_count": 2929,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.5490576988733357,
+      "long_lines_count_0_5m": 946,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_05_d0_2_m0_3\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_05_d0_2_m0_3\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_05_d0_2_m0_3\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_05_d0_4_m0_3",
+      "params": {
+        "line_max_gap_m": 0.05,
+        "line_min_density": 0.4,
+        "wall_min_length_m": 0.3
+      },
+      "status": "ok",
+      "score": 29.67579705176551,
+      "wall_segments_count": 2917,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.5496674665752486,
+      "long_lines_count_0_5m": 943,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_05_d0_4_m0_3\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_05_d0_4_m0_3\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_05_d0_4_m0_3\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_08_d0_3_m0_2",
+      "params": {
+        "line_max_gap_m": 0.08,
+        "line_min_density": 0.3,
+        "wall_min_length_m": 0.2
+      },
+      "status": "ok",
+      "score": 29.570622641509434,
+      "wall_segments_count": 6360,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.40710062893081767,
+      "long_lines_count_0_5m": 1184,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_08_d0_3_m0_2\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_08_d0_3_m0_2\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_08_d0_3_m0_2\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_08_d0_2_m0_2",
+      "params": {
+        "line_max_gap_m": 0.08,
+        "line_min_density": 0.2,
+        "wall_min_length_m": 0.2
+      },
+      "status": "ok",
+      "score": 29.550124069478905,
+      "wall_segments_count": 6448,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.4048604218362283,
+      "long_lines_count_0_5m": 1186,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_08_d0_2_m0_2\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_08_d0_2_m0_2\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_08_d0_2_m0_2\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_08_d0_4_m0_2",
+      "params": {
+        "line_max_gap_m": 0.08,
+        "line_min_density": 0.4,
+        "wall_min_length_m": 0.2
+      },
+      "status": "ok",
+      "score": 29.425736181314203,
+      "wall_segments_count": 6133,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.41168270014674707,
+      "long_lines_count_0_5m": 1169,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_08_d0_4_m0_2\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_08_d0_4_m0_2\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_08_d0_4_m0_2\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_03_d0_2_m0_3",
+      "params": {
+        "line_max_gap_m": 0.03,
+        "line_min_density": 0.2,
+        "wall_min_length_m": 0.3
+      },
+      "status": "ok",
+      "score": 27.53797010228167,
+      "wall_segments_count": 2542,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.5418568056648309,
+      "long_lines_count_0_5m": 783,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_03_d0_2_m0_3\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_03_d0_2_m0_3\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_03_d0_2_m0_3\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_03_d0_4_m0_3",
+      "params": {
+        "line_max_gap_m": 0.03,
+        "line_min_density": 0.4,
+        "wall_min_length_m": 0.3
+      },
+      "status": "ok",
+      "score": 27.53797010228167,
+      "wall_segments_count": 2542,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.5418568056648309,
+      "long_lines_count_0_5m": 783,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_03_d0_4_m0_3\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_03_d0_4_m0_3\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_03_d0_4_m0_3\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_05_d0_3_m0_2",
+      "params": {
+        "line_max_gap_m": 0.05,
+        "line_min_density": 0.3,
+        "wall_min_length_m": 0.2
+      },
+      "status": "ok",
+      "score": 25.46400675295442,
+      "wall_segments_count": 5331,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.405074094916526,
+      "long_lines_count_0_5m": 946,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_05_d0_3_m0_2\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_05_d0_3_m0_2\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_05_d0_3_m0_2\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_05_d0_2_m0_2",
+      "params": {
+        "line_max_gap_m": 0.05,
+        "line_min_density": 0.2,
+        "wall_min_length_m": 0.2
+      },
+      "status": "ok",
+      "score": 25.456426297059373,
+      "wall_segments_count": 5339,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.40483798464131865,
+      "long_lines_count_0_5m": 946,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_05_d0_2_m0_2\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_05_d0_2_m0_2\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_05_d0_2_m0_2\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_05_d0_4_m0_2",
+      "params": {
+        "line_max_gap_m": 0.05,
+        "line_min_density": 0.4,
+        "wall_min_length_m": 0.2
+      },
+      "status": "ok",
+      "score": 25.435340758920145,
+      "wall_segments_count": 5297,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.4058957900698509,
+      "long_lines_count_0_5m": 943,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_05_d0_4_m0_2\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_05_d0_4_m0_2\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_05_d0_4_m0_2\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_03_d0_4_m0_2",
+      "params": {
+        "line_max_gap_m": 0.03,
+        "line_min_density": 0.4,
+        "wall_min_length_m": 0.2
+      },
+      "status": "ok",
+      "score": 22.8298568329718,
+      "wall_segments_count": 4610,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.40215618221258137,
+      "long_lines_count_0_5m": 783,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_03_d0_4_m0_2\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_03_d0_4_m0_2\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_03_d0_4_m0_2\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_03_d0_2_m0_2",
+      "params": {
+        "line_max_gap_m": 0.03,
+        "line_min_density": 0.2,
+        "wall_min_length_m": 0.2
+      },
+      "status": "ok",
+      "score": 22.827346053772768,
+      "wall_segments_count": 4612,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.40208152645273204,
+      "long_lines_count_0_5m": 783,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_03_d0_2_m0_2\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_03_d0_2_m0_2\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_03_d0_2_m0_2\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_03_d0_3_m0_2",
+      "params": {
+        "line_max_gap_m": 0.03,
+        "line_min_density": 0.3,
+        "wall_min_length_m": 0.2
+      },
+      "status": "ok",
+      "score": 22.827346053772768,
+      "wall_segments_count": 4612,
+      "normalized_points_count": 219294,
+      "mean_line_length_m": 0.40208152645273204,
+      "long_lines_count_0_5m": 783,
+      "outputs": {
+        "raw_plan_dxf": "work\\autotune\\g0_03_d0_3_m0_2\\floorplan_raw.dxf",
+        "normalized_plan_dxf": "work\\autotune\\g0_03_d0_3_m0_2\\floorplan_normalized.dxf",
+        "wall_lines_dxf": "work\\autotune\\g0_03_d0_3_m0_2\\floorplan_walls.dxf"
+      }
+    },
+    {
+      "trial": "g0_03_d0_3_m0_3",
+      "params": {
+        "line_max_gap_m": 0.03,
+        "line_min_density": 0.3,
+        "wall_min_length_m": 0.3
+      },
+      "status": "failed",
+      "stderr": "act_floorplan.py\", line 411, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"C:\\Users\\vojacek\\OneDrive\\Atelier\\_CODEX\\PC_to_dwg\\bim\\scripts\\extract_floorplan.py\", line 358, in main\n    norm_layer_used = write_dxf_points(cfg.normalized_plan_dxf, snapped_xy, cfg.walls_layer)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\vojacek\\OneDrive\\Atelier\\_CODEX\\PC_to_dwg\\bim\\scripts\\extract_floorplan.py\", line 317, in write_dxf_points\n    path.write_text(text, encoding=\"ascii\", errors=\"ignore\")\n  File \"C:\\Users\\vojacek\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\pathlib.py\", line 1047, in write_text\n    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\vojacek\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nPermissionError: [Errno 13] Permission denied: 'work\\\\autotune\\\\g0_03_d0_3_m0_3\\\\floorplan_normalized.dxf'\n",
+      "stdout": ""
+    }
+  ]
+}

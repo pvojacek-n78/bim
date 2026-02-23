@@ -77,24 +77,29 @@ def main() -> int:
             "slice_height_m": 1.1,
             "slice_thickness_m": 0.1,
             "wall_min_length_m": 0.3,
+            "line_max_gap_m": 0.05,
+            "line_min_density": 0.30,
             "dominant_axis_alignment": True,
             "snap_grid_m": 0.01,
+            "raw_max_points": 500000,
         },
         "quality": {
             "max_deviation_m": 0.02,
             "notes": "Tolerance target from user: 2 cm",
         },
         "layers": {
-            "walls": "TODO_FROM_TEMPLATE",
-            "openings": "TODO_FROM_TEMPLATE",
-            "grid": "TODO_FROM_TEMPLATE",
-            "dimensions": "TODO_FROM_TEMPLATE",
-            "annotations": "TODO_FROM_TEMPLATE",
+            "walls": "1-0_ŘEZ",
+            "doors": "2-7_DVERE",
+            "windows": "2-8_OKNA",
+            "grid": "6-1_OSY",
+            "dimensions": "9-9_KOTY",
+            "annotations": "7-0_POPIS",
         },
         "outputs": {
             "raw_plan_dxf": "output/floorplan_raw.dxf",
             "normalized_plan_dxf": "output/floorplan_normalized.dxf",
             "qa_report_json": "output/floorplan_qa.json",
+            "wall_lines_dxf": "output/floorplan_walls.dxf",
         },
     }
 
@@ -107,10 +112,10 @@ def main() -> int:
             [
                 "# Next step checklist (2D floorplan)",
                 "",
-                "1. Open work/floorplan_config.json and map CAD layers from VZOR.dwg.",
-                "2. Confirm slice height (default 1.1 m) and wall thickness assumptions.",
-                "3. Run extraction implementation (next script) to produce raw + normalized DXF.",
-                "4. Validate QA report max deviation <= 0.02 m.",
+                "1. Verify layer mapping in work/floorplan_config.json matches your CAD standard.",
+                "2. Confirm slice/snap params and tune line_max_gap_m + line_min_density if walls are fragmented.",
+                "3. Run extraction script to produce raw/normalized DXF + wall lines DXF.",
+                "4. Validate QA report max deviation <= 0.02 m and check wall_segments_count > 0.",
             ]
         )
         + "\n",

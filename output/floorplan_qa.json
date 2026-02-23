@@ -1,0 +1,32 @@
+{
+  "input": "work\\full_floor_extracted\\3851_palac-YMCA-ukazka.e57",
+  "raw_points_total": 197700302,
+  "slice_target_z": 446.1728759765625,
+  "slice_points_count": 4867050,
+  "raw_points_exported": 500000,
+  "normalized_points_count": 219294,
+  "wall_segments_count": 2927,
+  "slice_height_m": 1.1,
+  "slice_thickness_m": 0.1,
+  "snap_grid_m": 0.01,
+  "wall_min_length_m": 0.3,
+  "line_max_gap_m": 0.05,
+  "line_min_density": 0.3,
+  "raw_max_points": 500000,
+  "max_deviation_m_target": 0.02,
+  "outputs": {
+    "raw_plan_dxf": "output\\floorplan_raw.dxf",
+    "normalized_plan_dxf": "output\\floorplan_normalized.dxf",
+    "wall_lines_dxf": "output\\floorplan_walls.dxf"
+  },
+  "layers_used_in_dxf": {
+    "raw": "1-0_REZ",
+    "normalized": "1-0_REZ",
+    "walls": "1-0_REZ"
+  },
+  "warnings": [
+    "Raw DXF was sampled from 4867050 to 500000 points (raw_max_points=500000).",
+    "Layer name sanitized for DXF compatibility: '1-0_\u0158EZ' -> '1-0_REZ'",
+    "Wall-lines output uses gap-bridged axis-aligned vectorization; review/tune wall_min_length_m, line_max_gap_m, line_min_density, snap_grid_m."
+  ]
+}
