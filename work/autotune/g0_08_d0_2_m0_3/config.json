@@ -1,0 +1,38 @@
+{
+  "input": {
+    "primary_pointcloud": "work\\full_floor_extracted\\3851_palac-YMCA-ukazka.e57",
+    "all_pointcloud_files": [
+      "work\\full_floor_extracted\\3851_palac-YMCA-ukazka.e57"
+    ],
+    "template_dwg": "input/templates/VZOR.dwg"
+  },
+  "extraction": {
+    "target": "2d_floorplan",
+    "slice_height_m": 1.1,
+    "slice_thickness_m": 0.1,
+    "wall_min_length_m": 0.3,
+    "line_max_gap_m": 0.08,
+    "line_min_density": 0.2,
+    "dominant_axis_alignment": true,
+    "snap_grid_m": 0.01,
+    "raw_max_points": 500000
+  },
+  "quality": {
+    "max_deviation_m": 0.02,
+    "notes": "Tolerance target from user: 2 cm"
+  },
+  "layers": {
+    "walls": "1-0_\u0158EZ",
+    "doors": "2-7_DVERE",
+    "windows": "2-8_OKNA",
+    "grid": "6-1_OSY",
+    "dimensions": "9-9_KOTY",
+    "annotations": "7-0_POPIS"
+  },
+  "outputs": {
+    "raw_plan_dxf": "work\\autotune\\g0_08_d0_2_m0_3\\floorplan_raw.dxf",
+    "normalized_plan_dxf": "work\\autotune\\g0_08_d0_2_m0_3\\floorplan_normalized.dxf",
+    "qa_report_json": "work\\autotune\\g0_08_d0_2_m0_3\\floorplan_qa.json",
+    "wall_lines_dxf": "work\\autotune\\g0_08_d0_2_m0_3\\floorplan_walls.dxf"
+  }
+}

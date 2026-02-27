@@ -1,0 +1,17 @@
+{
+  "parts_glob": "input/pointcloud/*.zip.*",
+  "combined_zip": "work\\full_floor.zip",
+  "extract_dir": "work\\full_floor_extracted",
+  "parts": [
+    "input\\pointcloud\\3851_palac-YMCA-ukazka.zip.001",
+    "input\\pointcloud\\3851_palac-YMCA-ukazka.zip.002",
+    "input\\pointcloud\\3851_palac-YMCA-ukazka.zip.003",
+    "input\\pointcloud\\3851_palac-YMCA-ukazka.zip.004",
+    "input\\pointcloud\\3851_palac-YMCA-ukazka.zip.005",
+    "input\\pointcloud\\3851_palac-YMCA-ukazka.zip.006"
+  ],
+  "warnings": [],
+  "pointcloud_files": [
+    "work\\full_floor_extracted\\3851_palac-YMCA-ukazka.e57"
+  ]
+}
