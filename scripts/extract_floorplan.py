@@ -4,7 +4,7 @@
 Outputs:
 - raw DXF POINT cloud slice (optionally capped by sampling)
 - normalized DXF POINT cloud (snapped + deduplicated)
-- wall-lines DXF (axis-aligned vectorization from normalized points)
+- wall-lines DXF (multi-angle vectorization from normalized points)
 - QA JSON report
 """
 
@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import time
 import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
@@ -33,6 +34,13 @@ class Config:
     wall_min_length_m: float
     line_max_gap_m: float
     line_min_density: float
+    dominant_axis_alignment: bool
+    line_angle_step_deg: float
+    line_angles_deg: list[float] | None
+    orthogonal_pair_mode: bool
+    orthogonal_base_angle_deg: float | None
+    orthogonal_angle_jitter_deg: float
+    orthogonal_angle_step_deg: float
     raw_max_points: int
     max_deviation_m: float
 
@@ -62,6 +70,21 @@ def load_config(path: Path) -> Config:
         wall_min_length_m=float(extraction.get("wall_min_length_m", 0.3)),
         line_max_gap_m=float(extraction.get("line_max_gap_m", 0.05)),
         line_min_density=float(extraction.get("line_min_density", 0.30)),
+        dominant_axis_alignment=bool(extraction.get("dominant_axis_alignment", False)),
+        line_angle_step_deg=float(extraction.get("line_angle_step_deg", 15.0)),
+        line_angles_deg=(
+            [float(x) for x in extraction.get("line_angles_deg", [])]
+            if extraction.get("line_angles_deg") is not None
+            else None
+        ),
+        orthogonal_pair_mode=bool(extraction.get("orthogonal_pair_mode", True)),
+        orthogonal_base_angle_deg=(
+            float(extraction["orthogonal_base_angle_deg"])
+            if extraction.get("orthogonal_base_angle_deg") is not None
+            else None
+        ),
+        orthogonal_angle_jitter_deg=float(extraction.get("orthogonal_angle_jitter_deg", 12.0)),
+        orthogonal_angle_step_deg=float(extraction.get("orthogonal_angle_step_deg", 4.0)),
         raw_max_points=int(extraction.get("raw_max_points", 500000)),
         max_deviation_m=float(data["quality"]["max_deviation_m"]),
     )
@@ -194,7 +217,6 @@ def to_grid_points(points_xy: list[tuple[float, float]], grid: float) -> set[tup
         raise SystemExit("snap_grid_m must be > 0 for wall vectorization.")
     return {(int(round(x / grid)), int(round(y / grid))) for x, y in points_xy}
 
-
 def _runs_with_gap(values: list[int], max_gap_cells: int) -> list[tuple[int, int, int]]:
     """Return list of (start, end, support_count) allowing small gaps."""
     if not values:
@@ -216,40 +238,123 @@ def _runs_with_gap(values: list[int], max_gap_cells: int) -> list[tuple[int, int
     return runs
 
 
+def _normalize_halfturn_angle(angle_deg: float) -> float:
+    normalized = angle_deg % 180.0
+    if normalized < 0:
+        normalized += 180.0
+    return normalized
+
+
+def _estimate_dominant_axis_angle(grid_points: set[tuple[int, int]]) -> float:
+    if not grid_points:
+        return 0.0
+
+    offsets = [
+        (dx, dy)
+        for dx in range(-2, 3)
+        for dy in range(-2, 3)
+        if not (dx == 0 and dy == 0)
+    ]
+    sample = list(grid_points)[:50000]
+
+    bins = [0] * 180
+    for gx, gy in sample:
+        for dx, dy in offsets:
+            if (gx + dx, gy + dy) not in grid_points:
+                continue
+            angle = _normalize_halfturn_angle(math.degrees(math.atan2(dy, dx)))
+            bins[int(round(angle)) % 180] += 1
+
+    peak_idx = max(range(180), key=lambda i: bins[i])
+    return float(peak_idx)
+
+
+def _angles_around(base_deg: float, jitter_deg: float, step_deg: float) -> set[float]:
+    step = max(0.1, step_deg)
+    jitter = max(0.0, jitter_deg)
+    count = int(math.floor(jitter / step))
+    return {
+        _normalize_halfturn_angle(base_deg + i * step)
+        for i in range(-count, count + 1)
+    }
+
+
+def resolve_candidate_angles(
+    dominant_axis_alignment: bool,
+    line_angle_step_deg: float,
+    line_angles_deg: list[float] | None,
+    orthogonal_pair_mode: bool,
+    orthogonal_base_angle_deg: float | None,
+    orthogonal_angle_jitter_deg: float,
+    orthogonal_angle_step_deg: float,
+    grid_points: set[tuple[int, int]],
+) -> list[float]:
+    if line_angles_deg is not None and len(line_angles_deg) > 0:
+        return sorted({_normalize_halfturn_angle(a) for a in line_angles_deg})
+
+    if orthogonal_pair_mode:
+        base = orthogonal_base_angle_deg
+        if base is None:
+            base = _estimate_dominant_axis_angle(grid_points)
+        a = _angles_around(base, orthogonal_angle_jitter_deg, orthogonal_angle_step_deg)
+        b = _angles_around(base + 90.0, orthogonal_angle_jitter_deg, orthogonal_angle_step_deg)
+        return sorted(a | b)
+
+    if dominant_axis_alignment:
+        return [0.0, 90.0]
+
+    step = max(1.0, line_angle_step_deg)
+    steps = max(1, int(round(180.0 / step)))
+    return sorted({_normalize_halfturn_angle(i * step) for i in range(steps)})
+
+
 def extract_wall_segments(
     grid_points: set[tuple[int, int]],
     grid: float,
     wall_min_length_m: float,
     line_max_gap_m: float,
     line_min_density: float,
+    candidate_angles_deg: list[float],
 ) -> list[tuple[float, float, float, float]]:
     min_cells = max(2, int(math.ceil(wall_min_length_m / grid)))
     max_gap_cells = max(0, int(round(line_max_gap_m / grid)))
     min_density = max(0.0, min(1.0, line_min_density))
 
     segments: list[tuple[float, float, float, float]] = []
+    dedupe: set[tuple[int, int, int, int]] = set()
 
-    rows: dict[int, list[int]] = {}
-    cols: dict[int, list[int]] = {}
-    for gx, gy in grid_points:
-        rows.setdefault(gy, []).append(gx)
-        cols.setdefault(gx, []).append(gy)
+    for angle in candidate_angles_deg:
+        rad = math.radians(angle)
+        cos_a = math.cos(rad)
+        sin_a = math.sin(rad)
 
-    # horizontal runs (with gap bridging)
-    for gy, xs in rows.items():
-        for start, end, support in _runs_with_gap(xs, max_gap_cells):
-            span = end - start + 1
-            density = support / span if span > 0 else 0.0
-            if span >= min_cells and density >= min_density:
-                segments.append((start * grid, gy * grid, end * grid, gy * grid))
+        lines: dict[int, list[int]] = {}
+        for gx, gy in grid_points:
+            u = gx * cos_a + gy * sin_a
+            v = -gx * sin_a + gy * cos_a
+            ui = int(round(u))
+            vi = int(round(v))
+            lines.setdefault(vi, []).append(ui)
 
-    # vertical runs (with gap bridging)
-    for gx, ys in cols.items():
-        for start, end, support in _runs_with_gap(ys, max_gap_cells):
-            span = end - start + 1
-            density = support / span if span > 0 else 0.0
-            if span >= min_cells and density >= min_density:
-                segments.append((gx * grid, start * grid, gx * grid, end * grid))
+        for vi, us in lines.items():
+            for start, end, support in _runs_with_gap(us, max_gap_cells):
+                span = end - start + 1
+                density = support / span if span > 0 else 0.0
+                if span < min_cells or density < min_density:
+                    continue
+
+                x1g = start * cos_a - vi * sin_a
+                y1g = start * sin_a + vi * cos_a
+                x2g = end * cos_a - vi * sin_a
+                y2g = end * sin_a + vi * cos_a
+
+                p1 = (int(round(x1g)), int(round(y1g)))
+                p2 = (int(round(x2g)), int(round(y2g)))
+                key = (*p1, *p2) if p1 <= p2 else (*p2, *p1)
+                if key in dedupe:
+                    continue
+                dedupe.add(key)
+                segments.append((p1[0] * grid, p1[1] * grid, p2[0] * grid, p2[1] * grid))
 
     return segments
 
@@ -314,7 +419,7 @@ def write_dxf_points(path: Path, points_xy: list[tuple[float, float]], layer: st
     path.parent.mkdir(parents=True, exist_ok=True)
     layer_safe = sanitize_dxf_layer_name(layer)
     text = dxf_header([layer_safe]) + dxf_points(points_xy, layer_safe) + "0\nENDSEC\n0\nEOF\n"
-    path.write_text(text, encoding="ascii", errors="ignore")
+    safe_write_text(path, text)
     return layer_safe
 
 
@@ -322,8 +427,24 @@ def write_dxf_lines(path: Path, segments: list[tuple[float, float, float, float]
     path.parent.mkdir(parents=True, exist_ok=True)
     layer_safe = sanitize_dxf_layer_name(layer)
     text = dxf_header([layer_safe]) + dxf_lines(segments, layer_safe) + "0\nENDSEC\n0\nEOF\n"
-    path.write_text(text, encoding="ascii", errors="ignore")
+    safe_write_text(path, text)
     return layer_safe
+
+
+def safe_write_text(path: Path, text: str, retries: int = 6, delay_s: float = 0.4) -> None:
+    """Write text with retries to survive transient Windows file locks (OneDrive/CAD preview)."""
+    last_exc: Exception | None = None
+    for _ in range(max(1, retries)):
+        try:
+            path.write_text(text, encoding="ascii", errors="ignore")
+
+            return
+        except PermissionError as exc:
+            last_exc = exc
+            time.sleep(max(0.0, delay_s))
+    raise SystemExit(
+        f"Cannot write output file after retries (file may be open in CAD/Explorer/OneDrive): {path}"
+    ) from last_exc
 
 
 def main() -> int:
@@ -346,12 +467,23 @@ def main() -> int:
     snapped_xy = unique_points(snap_xy(raw_xy_full, cfg.snap_grid_m))
 
     grid_points = to_grid_points(snapped_xy, cfg.snap_grid_m)
+    candidate_angles = resolve_candidate_angles(
+        cfg.dominant_axis_alignment,
+        cfg.line_angle_step_deg,
+        cfg.line_angles_deg,
+        cfg.orthogonal_pair_mode,
+        cfg.orthogonal_base_angle_deg,
+        cfg.orthogonal_angle_jitter_deg,
+        cfg.orthogonal_angle_step_deg,
+        grid_points,
+    )
     wall_segments = extract_wall_segments(
         grid_points,
         cfg.snap_grid_m,
         cfg.wall_min_length_m,
         cfg.line_max_gap_m,
         cfg.line_min_density,
+        candidate_angles,
     )
 
     raw_layer_used = write_dxf_points(cfg.raw_plan_dxf, raw_xy, cfg.walls_layer)
@@ -368,7 +500,7 @@ def main() -> int:
             f"Layer name sanitized for DXF compatibility: '{cfg.walls_layer}' -> '{walls_layer_used}'"
         )
     warnings.append(
-        "Wall-lines output uses gap-bridged axis-aligned vectorization; review/tune wall_min_length_m, line_max_gap_m, line_min_density, snap_grid_m."
+        "Wall-lines output uses gap-bridged vectorization with rotated orthogonal candidates; review/tune wall_min_length_m, line_max_gap_m, line_min_density, orthogonal_angle_jitter_deg, orthogonal_angle_step_deg, snap_grid_m."
     )
 
     report = {
@@ -385,6 +517,14 @@ def main() -> int:
         "wall_min_length_m": cfg.wall_min_length_m,
         "line_max_gap_m": cfg.line_max_gap_m,
         "line_min_density": cfg.line_min_density,
+        "dominant_axis_alignment": cfg.dominant_axis_alignment,
+        "line_angle_step_deg": cfg.line_angle_step_deg,
+        "line_angles_deg": cfg.line_angles_deg,
+        "orthogonal_pair_mode": cfg.orthogonal_pair_mode,
+        "orthogonal_base_angle_deg": cfg.orthogonal_base_angle_deg,
+        "orthogonal_angle_jitter_deg": cfg.orthogonal_angle_jitter_deg,
+        "orthogonal_angle_step_deg": cfg.orthogonal_angle_step_deg,
+        "candidate_angles_deg_used": candidate_angles,
         "raw_max_points": cfg.raw_max_points,
         "max_deviation_m_target": cfg.max_deviation_m,
         "outputs": {
