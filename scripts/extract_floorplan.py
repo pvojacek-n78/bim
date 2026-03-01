@@ -13,7 +13,6 @@ from __future__ import annotations
 import argparse
 import json
 import math
-import time
 import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
@@ -41,6 +40,8 @@ class Config:
     orthogonal_base_angle_deg: float | None
     orthogonal_angle_jitter_deg: float
     orthogonal_angle_step_deg: float
+    min_cell_hits: int
+    min_component_cells: int
     raw_max_points: int
     max_deviation_m: float
 
@@ -85,6 +86,8 @@ def load_config(path: Path) -> Config:
         ),
         orthogonal_angle_jitter_deg=float(extraction.get("orthogonal_angle_jitter_deg", 12.0)),
         orthogonal_angle_step_deg=float(extraction.get("orthogonal_angle_step_deg", 4.0)),
+        min_cell_hits=int(extraction.get("min_cell_hits", 3)),
+        min_component_cells=int(extraction.get("min_component_cells", 24)),
         raw_max_points=int(extraction.get("raw_max_points", 500000)),
         max_deviation_m=float(data["quality"]["max_deviation_m"]),
     )
@@ -216,6 +219,51 @@ def to_grid_points(points_xy: list[tuple[float, float]], grid: float) -> set[tup
     if grid <= 0:
         raise SystemExit("snap_grid_m must be > 0 for wall vectorization.")
     return {(int(round(x / grid)), int(round(y / grid))) for x, y in points_xy}
+
+
+def to_grid_counts(points_xy: list[tuple[float, float]], grid: float) -> dict[tuple[int, int], int]:
+    if grid <= 0:
+        raise SystemExit("snap_grid_m must be > 0 for wall vectorization.")
+    counts: dict[tuple[int, int], int] = {}
+    for x, y in points_xy:
+        key = (int(round(x / grid)), int(round(y / grid)))
+        counts[key] = counts.get(key, 0) + 1
+    return counts
+
+
+def filter_small_components(
+    grid_points: set[tuple[int, int]],
+    min_component_cells: int,
+) -> set[tuple[int, int]]:
+    """Keep only connected components with enough support to suppress furniture/noise."""
+    if min_component_cells <= 1:
+        return set(grid_points)
+
+    remaining = set(grid_points)
+    kept: set[tuple[int, int]] = set()
+    neighbors = [
+        (-1, -1), (-1, 0), (-1, 1),
+        (0, -1),           (0, 1),
+        (1, -1),  (1, 0),  (1, 1),
+    ]
+
+    while remaining:
+        seed = remaining.pop()
+        stack = [seed]
+        component = {seed}
+        while stack:
+            x, y = stack.pop()
+            for dx, dy in neighbors:
+                nb = (x + dx, y + dy)
+                if nb in remaining:
+                    remaining.remove(nb)
+                    component.add(nb)
+                    stack.append(nb)
+        if len(component) >= min_component_cells:
+            kept.update(component)
+
+    return kept
+
 
 def _runs_with_gap(values: list[int], max_gap_cells: int) -> list[tuple[int, int, int]]:
     """Return list of (start, end, support_count) allowing small gaps."""
@@ -419,7 +467,7 @@ def write_dxf_points(path: Path, points_xy: list[tuple[float, float]], layer: st
     path.parent.mkdir(parents=True, exist_ok=True)
     layer_safe = sanitize_dxf_layer_name(layer)
     text = dxf_header([layer_safe]) + dxf_points(points_xy, layer_safe) + "0\nENDSEC\n0\nEOF\n"
-    safe_write_text(path, text)
+    path.write_text(text, encoding="ascii", errors="ignore")
     return layer_safe
 
 
@@ -427,24 +475,8 @@ def write_dxf_lines(path: Path, segments: list[tuple[float, float, float, float]
     path.parent.mkdir(parents=True, exist_ok=True)
     layer_safe = sanitize_dxf_layer_name(layer)
     text = dxf_header([layer_safe]) + dxf_lines(segments, layer_safe) + "0\nENDSEC\n0\nEOF\n"
-    safe_write_text(path, text)
+    path.write_text(text, encoding="ascii", errors="ignore")
     return layer_safe
-
-
-def safe_write_text(path: Path, text: str, retries: int = 6, delay_s: float = 0.4) -> None:
-    """Write text with retries to survive transient Windows file locks (OneDrive/CAD preview)."""
-    last_exc: Exception | None = None
-    for _ in range(max(1, retries)):
-        try:
-            path.write_text(text, encoding="ascii", errors="ignore")
-
-            return
-        except PermissionError as exc:
-            last_exc = exc
-            time.sleep(max(0.0, delay_s))
-    raise SystemExit(
-        f"Cannot write output file after retries (file may be open in CAD/Explorer/OneDrive): {path}"
-    ) from last_exc
 
 
 def main() -> int:
@@ -464,9 +496,12 @@ def main() -> int:
         raise SystemExit("No points found in requested slice. Adjust slice_height_m or slice_thickness_m.")
 
     raw_xy, was_sampled = sample_points(raw_xy_full, cfg.raw_max_points)
-    snapped_xy = unique_points(snap_xy(raw_xy_full, cfg.snap_grid_m))
+    snapped_xy_all = snap_xy(raw_xy_full, cfg.snap_grid_m)
 
-    grid_points = to_grid_points(snapped_xy, cfg.snap_grid_m)
+    grid_counts = to_grid_counts(snapped_xy_all, cfg.snap_grid_m)
+    grid_points = {pt for pt, c in grid_counts.items() if c >= max(1, cfg.min_cell_hits)}
+    grid_points = filter_small_components(grid_points, max(1, cfg.min_component_cells))
+    snapped_xy = [(gx * cfg.snap_grid_m, gy * cfg.snap_grid_m) for gx, gy in sorted(grid_points)]
     candidate_angles = resolve_candidate_angles(
         cfg.dominant_axis_alignment,
         cfg.line_angle_step_deg,
@@ -502,6 +537,10 @@ def main() -> int:
     warnings.append(
         "Wall-lines output uses gap-bridged vectorization with rotated orthogonal candidates; review/tune wall_min_length_m, line_max_gap_m, line_min_density, orthogonal_angle_jitter_deg, orthogonal_angle_step_deg, snap_grid_m."
     )
+    if len(grid_points) < len(grid_counts):
+        warnings.append(
+            f"Grid denoise filters reduced occupied cells from {len(grid_counts)} to {len(grid_points)} (min_cell_hits={cfg.min_cell_hits}, min_component_cells={cfg.min_component_cells})."
+        )
 
     report = {
         "input": str(cfg.primary_pointcloud),
@@ -511,6 +550,9 @@ def main() -> int:
         "raw_points_exported": int(len(raw_xy)),
         "normalized_points_count": int(len(snapped_xy)),
         "wall_segments_count": int(len(wall_segments)),
+        "grid_points_before_filters": int(len(grid_counts)),
+        "min_cell_hits": cfg.min_cell_hits,
+        "min_component_cells": cfg.min_component_cells,
         "slice_height_m": cfg.slice_height_m,
         "slice_thickness_m": cfg.slice_thickness_m,
         "snap_grid_m": cfg.snap_grid_m,

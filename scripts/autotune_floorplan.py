@@ -73,11 +73,13 @@ def main() -> int:
 
     base = json.loads(base_path.read_text(encoding="utf-8"))
 
-    gap_values = [0.03, 0.05, 0.08, 0.12]
-    density_values = [0.20, 0.30, 0.40]
-    min_len_values = [0.20, 0.30, 0.40]
-    ortho_step_values = [3.0, 4.0, 6.0]
-    ortho_jitter_values = [8.0, 12.0, 16.0]
+    gap_values = [0.05, 0.08, 0.12]
+    density_values = [0.25, 0.30, 0.35]
+    min_len_values = [0.40, 0.50, 0.60]
+    ortho_step_values = [3.0, 4.0]
+    ortho_jitter_values = [8.0, 12.0]
+    min_cell_hits_values = [2, 3, 4]
+    min_component_cells_values = [16, 24, 40]
 
     tuning_dir = Path("work/autotune")
     tuning_dir.mkdir(parents=True, exist_ok=True)
@@ -90,39 +92,69 @@ def main() -> int:
             for min_len in min_len_values:
                 for ortho_step in ortho_step_values:
                     for ortho_jitter in ortho_jitter_values:
-                        cfg = copy.deepcopy(base)
-                        cfg.setdefault("extraction", {})["line_max_gap_m"] = gap
-                        cfg["extraction"]["line_min_density"] = dens
-                        cfg["extraction"]["wall_min_length_m"] = min_len
+                        for min_hits in min_cell_hits_values:
+                            for min_comp in min_component_cells_values:
+                                cfg = copy.deepcopy(base)
+                                cfg.setdefault("extraction", {})["line_max_gap_m"] = gap
+                                cfg["extraction"]["line_min_density"] = dens
+                                cfg["extraction"]["wall_min_length_m"] = min_len
 
-                        cfg["extraction"]["dominant_axis_alignment"] = False
-                        cfg["extraction"]["line_angle_step_deg"] = 15.0
-                        cfg["extraction"]["line_angles_deg"] = None
-                        cfg["extraction"]["orthogonal_pair_mode"] = True
-                        cfg["extraction"]["orthogonal_base_angle_deg"] = None
-                        cfg["extraction"]["orthogonal_angle_step_deg"] = ortho_step
-                        cfg["extraction"]["orthogonal_angle_jitter_deg"] = ortho_jitter
+                                cfg["extraction"]["dominant_axis_alignment"] = False
+                                cfg["extraction"]["line_angle_step_deg"] = 15.0
+                                cfg["extraction"]["line_angles_deg"] = None
+                                cfg["extraction"]["orthogonal_pair_mode"] = True
+                                cfg["extraction"]["orthogonal_base_angle_deg"] = None
+                                cfg["extraction"]["orthogonal_angle_step_deg"] = ortho_step
+                                cfg["extraction"]["orthogonal_angle_jitter_deg"] = ortho_jitter
+                                cfg["extraction"]["min_cell_hits"] = int(min_hits)
+                                cfg["extraction"]["min_component_cells"] = int(min_comp)
 
-                        trial_id = f"g{gap}_d{dens}_m{min_len}_s{ortho_step}_j{ortho_jitter}".replace(".", "_")
-                        out_dir = tuning_dir / trial_id
-                        out_dir.mkdir(parents=True, exist_ok=True)
+                                trial_id = (
+                                    f"g{gap}_d{dens}_m{min_len}_s{ortho_step}_j{ortho_jitter}_h{min_hits}_c{min_comp}"
+                                    .replace(".", "_")
+                                )
+                                out_dir = tuning_dir / trial_id
+                                out_dir.mkdir(parents=True, exist_ok=True)
 
-                        cfg.setdefault("outputs", {})["raw_plan_dxf"] = str(out_dir / "floorplan_raw.dxf")
-                        cfg["outputs"]["normalized_plan_dxf"] = str(out_dir / "floorplan_normalized.dxf")
-                        cfg["outputs"]["wall_lines_dxf"] = str(out_dir / "floorplan_walls.dxf")
-                        cfg["outputs"]["qa_report_json"] = str(out_dir / "floorplan_qa.json")
+                                cfg.setdefault("outputs", {})["raw_plan_dxf"] = str(out_dir / "floorplan_raw.dxf")
+                                cfg["outputs"]["normalized_plan_dxf"] = str(out_dir / "floorplan_normalized.dxf")
+                                cfg["outputs"]["wall_lines_dxf"] = str(out_dir / "floorplan_walls.dxf")
+                                cfg["outputs"]["qa_report_json"] = str(out_dir / "floorplan_qa.json")
 
-                        cfg_path = out_dir / "config.json"
-                        cfg_path.write_text(json.dumps(cfg, indent=2), encoding="utf-8")
+                                cfg_path = out_dir / "config.json"
+                                cfg_path.write_text(json.dumps(cfg, indent=2), encoding="utf-8")
 
-                        proc = subprocess.run(
-                            [sys.executable, args.extract_script, "--config", str(cfg_path)],
-                            capture_output=True,
-                            text=True,
-                        )
-                        if proc.returncode != 0:
-                            trials.append(
-                                {
+                                proc = subprocess.run(
+                                    [sys.executable, args.extract_script, "--config", str(cfg_path)],
+                                    capture_output=True,
+                                    text=True,
+                                )
+                                if proc.returncode != 0:
+                                    trials.append(
+                                        {
+                                            "trial": trial_id,
+                                            "params": {
+                                                "line_max_gap_m": gap,
+                                                "line_min_density": dens,
+                                                "wall_min_length_m": min_len,
+                                                "orthogonal_angle_step_deg": ortho_step,
+                                                "orthogonal_angle_jitter_deg": ortho_jitter,
+                                                "min_cell_hits": int(min_hits),
+                                                "min_component_cells": int(min_comp),
+                                            },
+                                            "status": "failed",
+                                            "stderr": proc.stderr[-1200:],
+                                            "stdout": proc.stdout[-1200:],
+                                        }
+                                    )
+                                    continue
+
+                                qa_path = Path(cfg["outputs"]["qa_report_json"])
+                                qa = json.loads(qa_path.read_text(encoding="utf-8"))
+                                lengths = parse_dxf_line_lengths(Path(cfg["outputs"]["wall_lines_dxf"]))
+                                score = score_trial(qa, lengths)
+
+                                row = {
                                     "trial": trial_id,
                                     "params": {
                                         "line_max_gap_m": gap,
@@ -130,40 +162,21 @@ def main() -> int:
                                         "wall_min_length_m": min_len,
                                         "orthogonal_angle_step_deg": ortho_step,
                                         "orthogonal_angle_jitter_deg": ortho_jitter,
+                                        "min_cell_hits": int(min_hits),
+                                        "min_component_cells": int(min_comp),
                                     },
-                                    "status": "failed",
-                                    "stderr": proc.stderr[-1200:],
-                                    "stdout": proc.stdout[-1200:],
+                                    "status": "ok",
+                                    "score": score,
+                                    "wall_segments_count": qa.get("wall_segments_count", 0),
+                                    "normalized_points_count": qa.get("normalized_points_count", 0),
+                                    "mean_line_length_m": (sum(lengths) / len(lengths)) if lengths else 0.0,
+                                    "long_lines_count_0_5m": sum(1 for x in lengths if x >= 0.5),
+                                    "outputs": qa.get("outputs", {}),
                                 }
-                            )
-                            continue
+                                trials.append(row)
 
-                        qa_path = Path(cfg["outputs"]["qa_report_json"])
-                        qa = json.loads(qa_path.read_text(encoding="utf-8"))
-                        lengths = parse_dxf_line_lengths(Path(cfg["outputs"]["wall_lines_dxf"]))
-                        score = score_trial(qa, lengths)
-
-                        row = {
-                            "trial": trial_id,
-                            "params": {
-                                "line_max_gap_m": gap,
-                                "line_min_density": dens,
-                                "wall_min_length_m": min_len,
-                                "orthogonal_angle_step_deg": ortho_step,
-                                "orthogonal_angle_jitter_deg": ortho_jitter,
-                            },
-                            "status": "ok",
-                            "score": score,
-                            "wall_segments_count": qa.get("wall_segments_count", 0),
-                            "normalized_points_count": qa.get("normalized_points_count", 0),
-                            "mean_line_length_m": (sum(lengths) / len(lengths)) if lengths else 0.0,
-                            "long_lines_count_0_5m": sum(1 for x in lengths if x >= 0.5),
-                            "outputs": qa.get("outputs", {}),
-                        }
-                        trials.append(row)
-
-                        if best is None or row["score"] > best["score"]:
-                            best = row
+                                if best is None or row["score"] > best["score"]:
+                                    best = row
 
     report = {
         "base_config": str(base_path),
@@ -190,6 +203,8 @@ def main() -> int:
         tuned["extraction"]["orthogonal_base_angle_deg"] = None
         tuned["extraction"]["orthogonal_angle_step_deg"] = best["params"]["orthogonal_angle_step_deg"]
         tuned["extraction"]["orthogonal_angle_jitter_deg"] = best["params"]["orthogonal_angle_jitter_deg"]
+        tuned["extraction"]["min_cell_hits"] = best["params"]["min_cell_hits"]
+        tuned["extraction"]["min_component_cells"] = best["params"]["min_component_cells"]
 
         tuned_path = report_path.parent / "floorplan_config.tuned.json"
         tuned_path.write_text(json.dumps(tuned, indent=2), encoding="utf-8")

@@ -87,7 +87,9 @@ def main() -> int:
             "orthogonal_angle_jitter_deg": 12.0,
             "orthogonal_angle_step_deg": 4.0,
             "snap_grid_m": 0.02,
-            "raw_max_points": 500000,
+            "raw_max_points": 200000,
+            "min_cell_hits": 3,
+            "min_component_cells": 24,
         },
         "quality": {
             "max_deviation_m": 0.02,
@@ -119,7 +121,7 @@ def main() -> int:
                 "# Next step checklist (2D floorplan)",
                 "",
                 "1. Verify layer mapping in work/floorplan_config.json matches your CAD standard.",
-                "2. Confirm slice/snap params and tune line_max_gap_m + line_min_density + orthogonal_angle_jitter_deg/orthogonal_angle_step_deg if walls are fragmented.",
+                "2. Confirm slice/snap params and tune min_cell_hits + min_component_cells + line_max_gap_m + line_min_density + orthogonal_angle_jitter_deg/orthogonal_angle_step_deg if walls are fragmented/noisy.",
                 "3. Run extraction script to produce raw/normalized DXF + wall lines DXF.",
                 "4. Validate QA report max deviation <= 0.02 m and check wall_segments_count > 0.",
             ]
