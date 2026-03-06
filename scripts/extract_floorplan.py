@@ -40,6 +40,8 @@ class Config:
     orthogonal_base_angle_deg: float | None
     orthogonal_angle_jitter_deg: float
     orthogonal_angle_step_deg: float
+    cs_mode: str
+    cs_angle_deg: float | None
     min_cell_hits: int
     min_component_cells: int
     raw_max_points: int
@@ -86,6 +88,12 @@ def load_config(path: Path) -> Config:
         ),
         orthogonal_angle_jitter_deg=float(extraction.get("orthogonal_angle_jitter_deg", 12.0)),
         orthogonal_angle_step_deg=float(extraction.get("orthogonal_angle_step_deg", 4.0)),
+        cs_mode=str(extraction.get("cs_mode", "auto")).lower(),
+        cs_angle_deg=(
+            float(extraction["cs_angle_deg"])
+            if extraction.get("cs_angle_deg") is not None
+            else None
+        ),
         min_cell_hits=int(extraction.get("min_cell_hits", 3)),
         min_component_cells=int(extraction.get("min_component_cells", 24)),
         raw_max_points=int(extraction.get("raw_max_points", 500000)),
@@ -327,6 +335,35 @@ def _angles_around(base_deg: float, jitter_deg: float, step_deg: float) -> set[f
     }
 
 
+def rotate_xy(points_xy: list[tuple[float, float]], angle_deg: float) -> list[tuple[float, float]]:
+    if abs(angle_deg) < 1e-9:
+        return points_xy
+    rad = math.radians(angle_deg)
+    cos_a = math.cos(rad)
+    sin_a = math.sin(rad)
+    return [(x * cos_a - y * sin_a, x * sin_a + y * cos_a) for x, y in points_xy]
+
+
+def resolve_cs_angle_deg(
+    cs_mode: str,
+    cs_angle_deg: float | None,
+    raw_xy_full: list[tuple[float, float]],
+    snap_grid_m: float,
+) -> float:
+    mode = cs_mode.lower().strip()
+    if mode == "off":
+        return 0.0
+    if mode == "manual":
+        if cs_angle_deg is None:
+            raise SystemExit("cs_mode=manual requires extraction.cs_angle_deg in config.")
+        return _normalize_halfturn_angle(cs_angle_deg)
+    if mode != "auto":
+        raise SystemExit("extraction.cs_mode must be one of: auto, manual, off")
+
+    seed_xy = unique_points(snap_xy(raw_xy_full, snap_grid_m))
+    seed_grid = to_grid_points(seed_xy, snap_grid_m)
+    return _estimate_dominant_axis_angle(seed_grid)
+
 def resolve_candidate_angles(
     dominant_axis_alignment: bool,
     line_angle_step_deg: float,
@@ -495,8 +532,11 @@ def main() -> int:
     if not raw_xy_full:
         raise SystemExit("No points found in requested slice. Adjust slice_height_m or slice_thickness_m.")
 
-    raw_xy, was_sampled = sample_points(raw_xy_full, cfg.raw_max_points)
-    snapped_xy_all = snap_xy(raw_xy_full, cfg.snap_grid_m)
+    cs_angle_deg_used = resolve_cs_angle_deg(cfg.cs_mode, cfg.cs_angle_deg, raw_xy_full, cfg.snap_grid_m)
+    aligned_xy_full = rotate_xy(raw_xy_full, -cs_angle_deg_used)
+
+    raw_xy, was_sampled = sample_points(aligned_xy_full, cfg.raw_max_points)
+    snapped_xy_all = snap_xy(aligned_xy_full, cfg.snap_grid_m)
 
     grid_counts = to_grid_counts(snapped_xy_all, cfg.snap_grid_m)
     grid_points = {pt for pt, c in grid_counts.items() if c >= max(1, cfg.min_cell_hits)}
@@ -537,6 +577,10 @@ def main() -> int:
     warnings.append(
         "Wall-lines output uses gap-bridged vectorization with rotated orthogonal candidates; review/tune wall_min_length_m, line_max_gap_m, line_min_density, orthogonal_angle_jitter_deg, orthogonal_angle_step_deg, snap_grid_m."
     )
+    if cfg.cs_mode != "off":
+        warnings.append(
+            f"Coordinate system alignment applied (cs_mode={cfg.cs_mode}, cs_angle_deg_used={cs_angle_deg_used:.3f})."
+        )
     if len(grid_points) < len(grid_counts):
         warnings.append(
             f"Grid denoise filters reduced occupied cells from {len(grid_counts)} to {len(grid_points)} (min_cell_hits={cfg.min_cell_hits}, min_component_cells={cfg.min_component_cells})."
@@ -566,6 +610,8 @@ def main() -> int:
         "orthogonal_base_angle_deg": cfg.orthogonal_base_angle_deg,
         "orthogonal_angle_jitter_deg": cfg.orthogonal_angle_jitter_deg,
         "orthogonal_angle_step_deg": cfg.orthogonal_angle_step_deg,
+        "cs_mode": cfg.cs_mode,
+        "cs_angle_deg_used": cs_angle_deg_used,
         "candidate_angles_deg_used": candidate_angles,
         "raw_max_points": cfg.raw_max_points,
         "max_deviation_m_target": cfg.max_deviation_m,
@@ -591,3 +637,10 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+
+
+
+
+
